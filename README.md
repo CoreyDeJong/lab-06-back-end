@@ -1,6 +1,6 @@
 # Project Name
 
-**Author**: Your Name Goes Here
+**Author**: Corey DeJong
 **Version**: 1.0.0 (increment the patch/fix version number if you make more commits past your first submission)
 
 ## Overview
@@ -24,9 +24,9 @@
 
 Number and name of feature: #2 Locations
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: 3 hours
 
-Start time: _____
+Start time: 9:30
 
 Finish time: _____
 
