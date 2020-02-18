@@ -72,7 +72,7 @@ function City(city, obj){
 // }
 
 
-// function weatherHandler
+// function weatherHandler//
 
 
 app.listen(PORT, () => {
