@@ -1,19 +1,30 @@
 'use strict';
 
+//express is the server, this defines how to connect to express
 const express = require('express');
 const app = express();
+
+
 const superagent = require('superagent');
 
+//cors is a library that is the policeman
 const cors = require('cors');
 app.use(cors());
 
+
+//.env is the hidden files where you keep your api keys
 require('dotenv').config();
 
+//go into the .env file and look for PORT to see which path to take, if it doesn't work, then use 3001
 const PORT = process.env.PORT || 3001;
 
+
+//front end web site is sending information through the '/location' input field once the user hits submit when they enter a city name, "seattle" for example. (request, response) are the parameters of how the information is being sent, they can be called anything
 app.get('/location', (request, response) => {
 
+  //query will be all the information sent over by the front end from the user (including user name, ip address....) but we only care about the city in this example, so we need to let city = exactly where city info is at. you can use console.log(request.query); to see all the info that is coming from the front end
     let city = request.query.city;
+    
     // let geoData = require('./data/geo.json');
     let url = `https://us1.locationiq.com/v1/search.php?key=${process.env.GEOCODE_API}&q=${city}&format=json`;
 
@@ -24,6 +35,8 @@ app.get('/location', (request, response) => {
       console.log('results from superagent', results.body);
       let geoData = results.body;
       let location = new City(city, geoData[0]);
+
+      //once the location has been defined, send that info as a response back to the front end
       response.status(200).send(location);
     })
     
@@ -67,10 +80,12 @@ app.get('/location', (request, response) => {
   weatherArray.forEach(day => {
     newWeatherArray.push(new Weather(day));
   })
-
+  
   response.send(newWeatherArray)
 })
 
+
+//constructor to take in data from the object from all the info from the front end and define this relative to how they are defined in the object.
 function City(city, obj){
   this.search_query = city;
   this.formatted_query = obj.display_name;
@@ -83,6 +98,7 @@ function Weather(day){
   this.forecast = day.summary;
 }
 
+//event listener to turn on the server
 app.listen(PORT, () => {
   console.log(`listening on ${PORT}`);
 })
