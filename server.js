@@ -65,15 +65,9 @@ app.listen(PORT, () => {
 
 
 
-<<<<<<< HEAD
 
 
 ////////original from 2.18//////////
-=======
-//////2.18 code///////
-
-
->>>>>>> 047fbd25a52b44117816d9e63af82a6a13ed9f48
 
 // 'use strict';
 
@@ -93,31 +87,19 @@ app.listen(PORT, () => {
 //   try{
 //     let city = request.query.city;
 //     let geoData = require('./data/geo.json');
-<<<<<<< HEAD
 //             console.log(geoData);
 //     let location = new City(city, geoData[0]);
 //             console.log('location56465165', location);
 
 //     let dataObj = {
 //       //"search_query" is what is coming from the front-end, will need info from trello board or inspect front-end file
-=======
-//   console.log(geoData);
-//     let location = new City(city, geoData[0]);
-//     console.log('location56465165', location);
-
-//     let dataObj = {
->>>>>>> 047fbd25a52b44117816d9e63af82a6a13ed9f48
 //       "search_query": city,
 //       "formatted_query": geoData[0].display_name,
 //       "latitude": geoData[0].lat,
 //       "longitude": geoData[0].lon
 //     }
   
-<<<<<<< HEAD
 //     response.send(location);
-=======
-//     response.status(200).json(location);
->>>>>>> 047fbd25a52b44117816d9e63af82a6a13ed9f48
 //   }
 //   catch (err){
 //     console.log(err);
