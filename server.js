@@ -17,24 +17,49 @@ app.get('/location', (request, response) => {
     // let geoData = require('./data/geo.json');
     let url = `https://us1.locationiq.com/v1/search.php?key=${process.env.GEOCODE_API}&q=${city}&format=json`;
 
+    
+    
     superagent.get(url)
-      .then(results => {
-        console.log('results from superagent', results.body);
-        let geoData = results.body;
-        let location = new City(city, geoData[0]);
-        response.status(200).send(location);
-      })
+    .then(results => {
+      console.log('results from superagent', results.body);
+      let geoData = results.body;
+      let location = new City(city, geoData[0]);
+      response.status(200).send(location);
+    })
+    
+  })
+  
+  app.get('/weather', (request, response) => {
+    let {search_query, formatted_query, latitude, longitude} = request.query;
+    // { search_query: 'tacoma',
+    // formatted_query: 'Lynnwood, Snohomish County, Washington, USA',
+    // latitude: '47.8278656',
+    // longitude: '-122.3053932' }
+    
+    // update with darksky info
+        let city = request.query.city;
+        // let geoData = require('./data/geo.json');
+        let url = `https://us1.locationiq.com/v1/search.php?key=${process.env.GEOCODE_API}&q=${city}&format=json`;
 
-})
+        //remove
+    let darkSky = require('./data/darksky.json');
 
-app.get('/weather', (request, response) => {
-  let {search_query, formatted_query, latitude, longitude} = request.query;
-  // { search_query: 'tacoma',
-  // formatted_query: 'Lynnwood, Snohomish County, Washington, USA',
-  // latitude: '47.8278656',
-  // longitude: '-122.3053932' }
 
-  let darkSky = require('./data/darksky.json');
+    //add superagent
+    // superagent.get(url)
+    // .then(results => {
+    //   console.log('results from superagent', results.body);
+    //   let geoData = results.body;
+    //   let location = new City(city, geoData[0]);
+    //   response.status(200).send(location);
+    // })
+
+
+
+
+
+
+
 
   let weatherArray = darkSky.daily.data;
 
