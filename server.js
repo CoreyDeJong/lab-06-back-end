@@ -3,6 +3,7 @@
 const express = require('express');
 const app = express();
 
+//pg is the library that connects the server to the database
 const pg = require('pg');
 
 require('dotenv').config();
