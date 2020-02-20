@@ -1,91 +1,64 @@
 'use strict';
 
-//express is the server, this defines how to connect to express
 const express = require('express');
 const app = express();
 
-
-const superagent = require('superagent');
-
-//cors is a library that is the policeman
+require('dotenv').config();
 const cors = require('cors');
 app.use(cors());
 
-
-//.env is the hidden files where you keep your api keys
-require('dotenv').config();
-
-//go into the .env file and look for PORT to see which path to take, if it doesn't work, then use 3001
 const PORT = process.env.PORT || 3001;
 
+const superagent = require('superagent');
 
-//front end web site is sending information through the '/location' input field once the user hits submit when they enter a city name, "seattle" for example. (request, response) are the parameters of how the information is being sent, they can be called anything
 app.get('/location', (request, response) => {
+  let city = request.query.city;
+  let url = `https://us1.locationiq.com/v1/search.php?key=${process.env.GEOCODE_API_KEY}&q=${city}&format=json`;
 
-  //query will be all the information sent over by the front end from the user (including user name, ip address....) but we only care about the city in this example, so we need to let city = exactly where city info is at. you can use console.log(request.query); to see all the info that is coming from the front end
-    let city = request.query.city;
-    
-    // let geoData = require('./data/geo.json');
-    let url = `https://us1.locationiq.com/v1/search.php?key=${process.env.GEOCODE_API}&q=${city}&format=json`;
+console.log(url);
 
-    
-    
-    superagent.get(url)
-    .then(results => {
-      console.log('results from superagent', results.body);
-      let geoData = results.body;
-      let location = new City(city, geoData[0]);
-
-      //once the location has been defined, send that info as a response back to the front end
-      response.status(200).send(location);
+  superagent.get(url)
+    .then(superagentResults => {
+      let location = new City(city, superagentResults.body[0])
+      response.send(location);
     })
-    
-  })
-  
-  app.get('/weather', (request, response) => {
-    let {search_query, formatted_query, latitude, longitude} = request.query;
-    // { search_query: 'tacoma',
-    // formatted_query: 'Lynnwood, Snohomish County, Washington, USA',
-    // latitude: '47.8278656',
-    // longitude: '-122.3053932' }
-    
-    // update with darksky info
-        let city = request.query.city;
-        // let geoData = require('./data/geo.json');
-        let url = `https://us1.locationiq.com/v1/search.php?key=${process.env.GEOCODE_API}&q=${city}&format=json`;
-
-        //remove
-    let darkSky = require('./data/darksky.json');
-
-
-    //add superagent
-    // superagent.get(url)
-    // .then(results => {
-    //   console.log('results from superagent', results.body);
-    //   let geoData = results.body;
-    //   let location = new City(city, geoData[0]);
-    //   response.status(200).send(location);
-    // })
-
-
-
-
-
-
-
-
-  let weatherArray = darkSky.daily.data;
-
-  let newWeatherArray = [];
-  weatherArray.forEach(day => {
-    newWeatherArray.push(new Weather(day));
-  })
-  
-  response.send(newWeatherArray)
 })
 
+app.get('/weather', (request, response) => {
+  let locationObject = request.query;
+  console.log(locationObject)
 
-//constructor to take in data from the object from all the info from the front end and define this relative to how they are defined in the object.
+  let url = `https://api.darksky.net/forecast/${process.env.WEATHER_API_KEY}/${locationObject.latitude},${locationObject.longitude}`;
+
+  console.log(url);
+  superagent.get(url)
+    .then(results => {
+      let weatherArray = results.body.daily.data;
+
+      let weatherMap = weatherArray.map(day => new Weather(day));
+
+      response.status(200).send(weatherMap);
+      // loop over the array
+      // send in each object to the constructor
+    })
+})
+
+app.get('/trails', (request, response) => {
+  let { 
+  latitude, 
+  longitude, } = request.query;
+
+  let url = `https://www.hikingproject.com/data/get-trails?lat=${latitude}&lon=${longitude}&maxDistance=10&key=${process.env.TRAILS_API}`;
+
+  console.log(url);
+
+  superagent.get(url)
+    .then(results => {
+      const dataObj = results.body.trails.map(trail => new Trail(trail));
+      response.status(200).send(dataObj)
+    })
+})
+
 function City(city, obj){
   this.search_query = city;
   this.formatted_query = obj.display_name;
@@ -93,121 +66,24 @@ function City(city, obj){
   this.longitude = obj.lon;
 }
 
-function Weather(day){
-  this.time = new Date(day.time).toDateString();
-  this.forecast = day.summary;
+function Weather(obj){
+  this.time = new Date(obj.time*1000).toDateString();
+  this.forecast = obj.summary;
 }
 
-//event listener to turn on the server
+function Trail(obj){
+  this.name = obj.name;
+  this.location = obj.location;
+  this.length = obj.length;
+  this.stars = obj.stars;
+  this.star_votes = obj.starVotes;
+  this.summary = obj.summary;
+  this.trail_url = obj.url;
+  this.conditions = obj.conditionStatus;
+  this.condition_date = obj.conditionDate.slice(0,10);
+  this.condition_time = obj.conditionDate.slice(11,19);
+}
+
 app.listen(PORT, () => {
-  console.log(`listening on ${PORT}`);
+  console.log(`listening on ${PORT}`)
 })
-
-
-
-
-
-
-////////original from 2.18//////////
-
-// 'use strict';
-
-// const express = require('express');
-
-// const app = express();
-
-// require('dotenv').config();
-
-// const cors = require('cors');
-// app.use(cors());
-
-// const PORT = process.env.PORT || 3001;
-
-// app.get('/location', (request, response) => {
-  
-//   try{
-//     let city = request.query.city;
-//     let geoData = require('./data/geo.json');
-//             console.log(geoData);
-//     let location = new City(city, geoData[0]);
-//             console.log('location56465165', location);
-
-//     let dataObj = {
-//       //"search_query" is what is coming from the front-end, will need info from trello board or inspect front-end file
-//       "search_query": city,
-//       "formatted_query": geoData[0].display_name,
-//       "latitude": geoData[0].lat,
-//       "longitude": geoData[0].lon
-//     }
-  
-//     response.send(location);
-//   }
-//   catch (err){
-//     console.log(err);
-//   }
-// })
-
-// function City(city, obj){
-//   this.search_query = city;
-//   this.formatted_query = obj.display_name;
-//   this.latitude = obj.lat;
-//   this.longitude = obj.lon;
-// }
-
-
-// app.get('/weather', (request, response) => {
-//   let city = request.query.city;
-//   let darkSky = require('./data/darksky.json')
-  
-//   let weatherArray = darkSky.daily.data;
-  
-//   let newWeatherArray = [];
-
-//   weatherArray.forEach(day => {
-//     new Weather(day.time, day.summary);
-//   }
-    
-
-//   function Weather(day){
-//     this.time = day.time;
-//     this.forecast = day.summary;
-//   }
-
-
-
-
-
-//   try{
-//     let city = request.query.city;
-//     let geoData = require('./data/darksy.json');
-//   console.log(geoData);
-//     let location = new City(city, geoData[0]);
-//     console.log('location56465165', location);
-
-//     let dataObj = {
-//       "search_query": city,
-//       "formatted_query": geoData[0].display_name,
-//       "latitude": geoData[0].lat,
-//       "longitude": geoData[0].lon
-//     }
-  
-//     response.status(200).json(location);
-//   }
-//   catch (err){
-//     console.log(err);
-//   }
-// })
-
-//   function Weather(day){
-//     this.forecast = day.summary;
-//     this.time = new Date
-  
-// }
-
-
-// function weatherHandler//
-
-
-// app.listen(PORT, () => {
-//   console.log(`listening to ${PORT}`);
-// });
