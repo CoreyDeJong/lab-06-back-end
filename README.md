@@ -22,7 +22,7 @@
 -->
 
 
-Number and name of feature: #2 Locations
+Number and name of feature: #2 Locations - used lecture code
 
 Estimate of time needed to complete: 3 hours
 
@@ -34,7 +34,7 @@ Actual time needed to complete: _____
 
 
 
-Number and name of feature: #3 Weather
+Number and name of feature: #3 Weather - used lecture code
 
 Estimate of time needed to complete: _____
 
