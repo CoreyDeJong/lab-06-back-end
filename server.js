@@ -3,11 +3,19 @@
 const express = require('express');
 const app = express();
 
+const pg = require('pg');
+
 require('dotenv').config();
 const cors = require('cors');
 app.use(cors());
 
 const PORT = process.env.PORT || 3001;
+
+// server set-up
+// database is a connection object to our postgress instance
+const database = new pg.Client(process.env.DATABASE_URL);
+database.on('error', err => console.error(err));
+database.connect();
 
 const superagent = require('superagent');
 
@@ -83,6 +91,10 @@ function Trail(obj){
   this.condition_date = obj.conditionDate.slice(0,10);
   this.condition_time = obj.conditionDate.slice(11,19);
 }
+
+//lab 8
+app.get('/display', (request, response))
+
 
 app.listen(PORT, () => {
   console.log(`listening on ${PORT}`)
