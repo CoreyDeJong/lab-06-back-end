@@ -1,5 +1,7 @@
 'use strict';
 
+// lets us go into the .env file and get the important secrets(PORT, API Keys, Database URL with password,...)
+require('dotenv').config();
 
 // brings in the expresss library which is our server. It is the library that the server uses to receive info from the user
 const express = require('express');
@@ -12,10 +14,8 @@ const pg = require('pg');
 // in the pg library(postgress that connects the server to the database), there is a constructor called Client, and this will connet through that database.url defined in the .env file
 const database = new pg.Client(process.env.DATABASE_URL);
 database.on('error', err => console.error(err));
-database.connect();
 
-// lets us go into the .env file and get the important secrets(PORT, API Keys, Database URL with password,...)
-require('dotenv').config();
+
 
 // the policeman - lets the server know that it is OK to give information to the front end
 const cors = require('cors');
@@ -40,7 +40,7 @@ app.get('/location', (request, response) => {
   let safeValues = [city];
 
 //client request is querying the database using the 
-client.query(sql, safeValues)
+database.query(sql, safeValues)
   .then(results => {
 
     //query will always return an array, length of rows greater than 0, you know you have data
@@ -69,7 +69,7 @@ client.query(sql, safeValues)
           let safeValues = [location.search_query, location.formatted_query, location.latitude, location. longitude];
 
           //send the sql and safevalues into the database using a query
-          client.query(sql, safeValues);
+          database.query(sql, safeValues);
           
           response.send(location);
         })
@@ -137,10 +137,15 @@ function Trail(obj){
   this.condition_time = obj.conditionDate.slice(11,19);
 }
 
-//lab 8
-// app.get('/display', (request, response))
+// connect to database, then will tell you if it is connected, will tell you listening on port....
+database.connect()
+  .then(() =>{
 
 // turn on the server
 app.listen(PORT, () => {
   console.log(`listening on ${PORT}`)
 })
+})
+  
+  
+
