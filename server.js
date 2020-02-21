@@ -1,35 +1,79 @@
 'use strict';
 
+
+// brings in the expresss library which is our server. It is the library that the server uses to receive info from the user
 const express = require('express');
+// initializing the express library into a const called app
 const app = express();
 
-//pg is the library that connects the server to the database
+//pg is the postgress library that connects the server to the database, these are are in the node modules
 const pg = require('pg');
 
-require('dotenv').config();
-const cors = require('cors');
-app.use(cors());
-
-const PORT = process.env.PORT || 3001;
-
-// server set-up
-// database is a connection object to our postgress instance
+// in the pg library(postgress that connects the server to the database), there is a constructor called Client, and this will connet through that database.url defined in the .env file
 const database = new pg.Client(process.env.DATABASE_URL);
 database.on('error', err => console.error(err));
 database.connect();
 
+// lets us go into the .env file and get the important secrets(PORT, API Keys, Database URL with password,...)
+require('dotenv').config();
+
+// the policeman - lets the server know that it is OK to give information to the front end
+const cors = require('cors');
+app.use(cors());
+
+// get the port from the .env file, process is just how the code is supposed to be written, or 3001 if the first port is bad
+const PORT = process.env.PORT || 3001;
+
+// connects to API's
 const superagent = require('superagent');
 
+
+
+// app is the express server, getting a request of the "location" as defined by the user
 app.get('/location', (request, response) => {
+
+  // city will equal the city that is defined in the request query
   let city = request.query.city;
-  let url = `https://us1.locationiq.com/v1/search.php?key=${process.env.GEOCODE_API_KEY}&q=${city}&format=json`;
 
-console.log(url);
+  // defining let variables that will be used to look in my DB to see if location already exists. $1 is the safevalue to prevent hackers from inserting into database
+  let sql = 'SELECT * FROM locations WHERE search_query=$1';
+  let safeValues = [city];
 
-  superagent.get(url)
-    .then(superagentResults => {
-      let location = new City(city, superagentResults.body[0])
-      response.send(location);
+//client request is querying the database using the 
+client.query(sql, safeValues)
+  .then(results => {
+
+    //query will always return an array, length of rows greater than 0, you know you have data
+    if(results.rows.length > 0){
+
+     //send the results from the rows as a response, index 0 to only send that value and not the entire array in that row.
+    response.send(results.rows[0]);
+      } 
+      
+    else {
+      //if database does not have the data, then go to the api. Save it to the database and save it to the front end
+      
+      // url will now have a url that includes the city that was just defined and include your api key. 
+      let url = `https://us1.locationiq.com/v1/search.php?key=${process.env.GEOCODE_API_KEY}&q=${city}&format=json`;
+      
+      console.log(url);
+      
+
+    // superagent will use the now defined url that includes city and api key
+      superagent.get(url)
+        .then(superagentResults => {
+          let location = new City(city, superagentResults.body[0])
+          
+          //insert data into database so it can be referenced again
+          let sql='INSERT INTO locations (search_query, formatted_query, latitude, longitude) VALUES ($1, $2, $3, $4);';
+          let safeValues = [location.search_query, location.formatted_query, location.latitude, location. longitude];
+
+          //send the sql and safevalues into the database using a query
+          client.query(sql, safeValues);
+          
+          response.send(location);
+        })
+      }
     })
 })
 
@@ -94,9 +138,9 @@ function Trail(obj){
 }
 
 //lab 8
-app.get('/display', (request, response))
+// app.get('/display', (request, response))
 
-
+// turn on the server
 app.listen(PORT, () => {
   console.log(`listening on ${PORT}`)
 })
