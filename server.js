@@ -8,6 +8,10 @@ const express = require('express');
 // initializing the express library into a const called app
 const app = express();
 
+// the policeman - lets the server know that it is OK to give information to the front end
+const cors = require('cors');
+app.use(cors());
+
 //pg is the postgress library that connects the server to the database, these are are in the node modules
 const pg = require('pg');
 
@@ -17,9 +21,6 @@ database.on('error', err => console.error(err));
 
 
 
-// the policeman - lets the server know that it is OK to give information to the front end
-const cors = require('cors');
-app.use(cors());
 
 // get the port from the .env file, process is just how the code is supposed to be written, or 3001 if the first port is bad
 const PORT = process.env.PORT || 3001;
