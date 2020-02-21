@@ -97,10 +97,41 @@ app.get('/weather', (request, response) => {
     })
 })
 
+app.get('/movies', (request, response) => {
+  let location = request.query.search_query;
+  console.log("request search query", request.search_query);
+
+  let url = `https://api.themoviedb.org/3/search/movie/?api_key=${process.env.MOVIE_API_KEY}&language=en-US&page=1&query=${location}`;
+
+superagent.get(url)
+//promise to not run until the url is defined
+  .then(results => {
+    console.log('movie superagent results', results.body);
+    let movieData = results.body.movies;
+    let movieResults = movieData.map((data) => (new Movie(data)));
+
+  })
+  .catch(err =>{
+    response.status(500).send(err);
+  })
+})
+
+function Movie(obj){
+  this.title = obj.original_title;
+  this.overview = obj.overview;
+  this.average_votes = obj.vote_average;
+  this.total_votes = obj.vote_average;
+  // this.image_url = ": "https://image.tmdb.org/t/p/w500/afkYP15OeUOD0tFEmj6VvejuOcz.jpg",
+  this.popularity = obj.popularity;
+  this.released_on = obj.release_date;
+}
+
+
+
+
+
 app.get('/trails', (request, response) => {
-  let { 
-  latitude, 
-  longitude, } = request.query;
+  let { latitude, longitude, } = request.query;
 
   let url = `https://www.hikingproject.com/data/get-trails?lat=${latitude}&lon=${longitude}&maxDistance=10&key=${process.env.TRAILS_API}`;
 
