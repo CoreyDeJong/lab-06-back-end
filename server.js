@@ -107,9 +107,9 @@ superagent.get(url)
 //promise to not run until the url is defined
   .then(results => {
     console.log('movie superagent results', results.body);
-    let movieData = results.body.movies;
+    let movieData = results.body.results;
     let movieResults = movieData.map((data) => (new Movie(data)));
-
+    response.send(movieResults);
   })
   .catch(err =>{
     response.status(500).send(err);
@@ -121,12 +121,12 @@ function Movie(obj){
   this.overview = obj.overview;
   this.average_votes = obj.vote_average;
   this.total_votes = obj.vote_average;
-  this.image_url = backdrop_path;
+  this.image_url = `https://image.tmdb.org/t/p/w500${obj.poster_path}`;
   this.popularity = obj.popularity;
   this.released_on = obj.release_date;
 }
 
-
+//yelp url https://api.yelp.com/v3/businesses/search ? may need location, refer to lecture 2.21
 
 
 
