@@ -57,7 +57,7 @@ database.query(sql, safeValues)
       // url will now have a url that includes the city that was just defined and include your api key. 
       let url = `https://us1.locationiq.com/v1/search.php?key=${process.env.GEOCODE_API_KEY}&q=${city}&format=json`;
       
-      console.log(url);
+      // console.log(url);
       
 
     // superagent will use the now defined url that includes city and api key
@@ -80,11 +80,11 @@ database.query(sql, safeValues)
 
 app.get('/weather', (request, response) => {
   let locationObject = request.query;
-  console.log(locationObject)
+  // console.log(locationObject)
 
   let url = `https://api.darksky.net/forecast/${process.env.WEATHER_API_KEY}/${locationObject.latitude},${locationObject.longitude}`;
 
-  console.log(url);
+  // console.log(url);
   superagent.get(url)
     .then(results => {
       let weatherArray = results.body.daily.data;
@@ -105,29 +105,53 @@ app.get('/movies', (request, response) => {
 
 superagent.get(url)
 //promise to not run until the url is defined
-  .then(results => {
-    console.log('movie superagent results', results.body);
-    let movieData = results.body.movies;
+  .then(results1 => {
+    // console.log('movie superagent results', results.body);
+    let movieData = results1.body.results;
     let movieResults = movieData.map((data) => (new Movie(data)));
-
+    response.send(movieResults);
   })
   .catch(err =>{
     response.status(500).send(err);
-  })
-})
+  });
+});
 
 function Movie(obj){
-  this.title = obj.original_title;
+  this.title = obj.title;
   this.overview = obj.overview;
   this.average_votes = obj.vote_average;
-  this.total_votes = obj.vote_average;
-  // this.image_url = ": "https://image.tmdb.org/t/p/w500/afkYP15OeUOD0tFEmj6VvejuOcz.jpg",
+  this.total_votes = obj.vote_count;
+  this.image_url = `https://image.tmdb.org/t/p/w500${obj.poster_path}`;
   this.popularity = obj.popularity;
   this.released_on = obj.release_date;
 }
 
+app.get('/yelp', handleYelp);
+
+function handleYelp(request, response){
+  let city = request.query.search_query;
+ 
+  let url = `https://api.yelp.com/v3/businesses/search?location=${city}`;
+
+  superagent.get(url)
+    .set('Authorization', `Bearer ${process.env.YELP_API_KEY}`)
+    .then(results => {
+      // console.log(results.body.businesses);
+      let dataObj = results.body.businesses.map(business => {
+        return new Yelp(business);
+      });
+      response.status(200).send(dataObj);
+  });
+}
 
 
+function Yelp(obj){
+  this.name = obj.name;
+  this.image_url = obj.image_url;
+  this.price = obj.price;
+  this.rating = obj.rating;
+  this.url = obj.url;
+}
 
 
 app.get('/trails', (request, response) => {
@@ -135,7 +159,7 @@ app.get('/trails', (request, response) => {
 
   let url = `https://www.hikingproject.com/data/get-trails?lat=${latitude}&lon=${longitude}&maxDistance=10&key=${process.env.TRAILS_API}`;
 
-  console.log(url);
+  // console.log(url);
 
   superagent.get(url)
     .then(results => {
