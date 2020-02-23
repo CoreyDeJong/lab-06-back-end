@@ -36,9 +36,9 @@ Actual time needed to complete: _____
 
 Number and name of feature: #3 Weather - used lecture code
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: ___3hrs__
 
-Start time: _____
+Start time: _10am____
 
 Finish time: _____
 
@@ -48,7 +48,7 @@ Actual time needed to complete: _____
 
 Number and name of feature: #4 Errors
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: __6 hours___
 
 Start time: _____
 
