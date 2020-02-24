@@ -22,27 +22,27 @@
 -->
 
 
-Number and name of feature: #2 Locations - used lecture code
+Number and name of feature: #2 Locations - used lecture code to fix my initial attempt
 
 Estimate of time needed to complete: 3 hours
 
-Start time: 9:30
+Start time: 9am
 
-Finish time: _____
+Finish time: __2.19___
 
-Actual time needed to complete: _____
+Actual time needed to complete: __5 hrs___
 
 
 
-Number and name of feature: #3 Weather - used lecture code
+Number and name of feature: #3 Weather - used lecture code to fix my initial attempt
 
 Estimate of time needed to complete: ___3hrs__
 
-Start time: _10am____
+Start time: _2.20
 
-Finish time: _____
+Finish time: _2.23____
 
-Actual time needed to complete: _____
+Actual time needed to complete: _6 hours____
 
 
 
@@ -50,8 +50,8 @@ Number and name of feature: #4 Errors
 
 Estimate of time needed to complete: __6 hours___
 
-Start time: _____
+Start time: __2.21___
 
-Finish time: _____
+Finish time: __2.23___
 
-Actual time needed to complete: _____
+Actual time needed to complete: ___8 hours__
